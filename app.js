@@ -90,10 +90,40 @@ async function viewOptions() {
 
 function addDepartment() {
     console.log("Adding new department");
+
+    const connection = mysql.createConnection({
+        host: "localhost",
+        user: "root",
+        password: "password",
+        database: "employee_catalog",
+        multipleStatements: true
+    });
+    connection.connect(async function (err) {
+        if (err) throw err;
+
+        const department = await inquirer.prompt([
+            {
+                type: "input",
+                name: "name",
+                message: "Enter department name:"
+            }
+        ]);
+
+        connection.query("INSERT INTO department SET ?",
+        {
+            name: department.name,
+        },
+        function(err, res) {
+            if (err) throw err;
+            connection.destroy();
+            console.log(res.affectedRows + " dept inserted!\n");
+            options();
+        });
+    });
 }
 
 function addRole() {
-    console.log("Adding new employee");
+    console.log("Adding new role");
 }
 
 function addEmployee() {
@@ -101,7 +131,7 @@ function addEmployee() {
 }
 
 function viewDepartment() {
-    console.log("update department");
+    console.log("view department");
 }
 
 function viewRole() {
