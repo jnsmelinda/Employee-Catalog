@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/jnsmelinda/Employee-Catalog#readme",
   "dependencies": {
+    "fs": "0.0.1-security",
     "inquirer": "^7.3.3",
     "mysql": "^2.18.1"
   }
