@@ -1,0 +1,23 @@
+{
+  "name": "employee-catalog",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jnsmelinda/Employee-Catalog.git"
+  },
+  "author": "Melinda Ivanov",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jnsmelinda/Employee-Catalog/issues"
+  },
+  "homepage": "https://github.com/jnsmelinda/Employee-Catalog#readme",
+  "dependencies": {
+    "inquirer": "^7.3.3",
+    "mysql": "^2.18.1"
+  }
+}
