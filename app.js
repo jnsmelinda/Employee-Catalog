@@ -165,47 +165,64 @@ function addRole() {
 async function addEmployee() {
     console.log("addEmployee");
     connection.query(
-        "SELECT * FROM department",
-        async function (err, res) {
+        "SELECT * FROM employee",
+        function (err, res) {
             if (err) throw err;
-            const roles = [];
+            const managerChoices = [{value: null, name: 'None'}];
             for (let i = 0; i < res.length; i++) {
-                roles.push({value: res[i].id, name: res[i].name});
+                managerChoices.push({value: res[i].id, name: `${res[i].first_name} ${res[i].last_name}`});
             }
-
-            const employee = await inquirer.prompt([
-                {
-                    type: "input",
-                    name: "firstName",
-                    message: "First name:"
-                },
-                {
-                    type: "input",
-                    name: "lastName",
-                    message: "Last name:"
-                },
-                {
-                    type: "list",
-                    name: "roleId",
-                    message: "Role:",
-                    choices: roles
-                }
-            ]);
-
-            connection.query("INSERT INTO employee SET ?",
-                {
-                    first_name: employee.firstName,
-                    last_name: employee.lastName,
-                    role_id : employee.roleId,
-                },
-                function(err, res) {
+            connection.query(
+                "SELECT * FROM department",
+                async function (err, res) {
                     if (err) throw err;
-                    console.log(res.affectedRows + " employee inserted!\n");
-                    options();
+                    const roles = [];
+                    for (let i = 0; i < res.length; i++) {
+                        roles.push({value: res[i].id, name: res[i].name});
+                    }
+
+                    const employee = await inquirer.prompt([
+                        {
+                            type: "input",
+                            name: "firstName",
+                            message: "First name:"
+                        },
+                        {
+                            type: "input",
+                            name: "lastName",
+                            message: "Last name:"
+                        },
+                        {
+                            type: "list",
+                            name: "roleId",
+                            message: "Role:",
+                            choices: roles
+                        },
+                        {
+                            type: "list",
+                            name: "managerId",
+                            message: "Manager:",
+                            choices: managerChoices
+                        }
+                    ]);
+
+                    connection.query("INSERT INTO employee SET ?",
+                        {
+                            first_name: employee.firstName,
+                            last_name: employee.lastName,
+                            role_id : employee.roleId,
+                            manager_id: employee.managerId
+                        },
+                        function(err, res) {
+                            if (err) throw err;
+                            console.log(res.affectedRows + " employee inserted!\n");
+                            options();
+                        }
+                    );
                 }
             );
         }
-    )
+    );
 }
 
 function viewDepartment() {
