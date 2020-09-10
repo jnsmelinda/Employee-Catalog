@@ -93,7 +93,7 @@ async function viewOptions() {
     })
 }
 
-function addDepartment() {
+async function addDepartment() {
     console.log("Adding new department");
     const department = await inquirer.prompt([
         {
@@ -145,7 +145,6 @@ function addRole() {
             ]);
             console.log(role);
 
-
             connection.query(
                 "INSERT INTO role SET ?",
                 {
@@ -163,8 +162,33 @@ function addRole() {
     );
 }
 
-function addEmployee() {
+async function addEmployee() {
     console.log("addEmployee");
+    const employee = await inquirer.prompt([
+        {
+            type: "input",
+            name: "first_name",
+            message: "First name:"
+        },
+        {
+            type: "input",
+            name: "last_name",
+            message: "Last name:"
+        },
+    ]);
+
+    connection.query("INSERT INTO employee SET ?",
+        {
+            first_name: employee.first_name,
+            last_name: employee.last_name,
+            role_id : 1,
+        },
+        function(err, res) {
+            if (err) throw err;
+            console.log(res.affectedRows + " employee inserted!\n");
+            options();
+        }
+    );
 }
 
 function viewDepartment() {
@@ -172,7 +196,7 @@ function viewDepartment() {
 }
 
 function viewRole() {
-    console.log("update role");
+    console.log("view role");
 }
 
 function viewEmployee() {
