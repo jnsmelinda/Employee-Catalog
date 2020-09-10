@@ -2,7 +2,12 @@ const mysql = require('mysql');
 const initdb = require('./db-init');
 const inquirer = require("inquirer");
 
-initdb();
+const connection = mysql.createConnection({
+    host: "localhost",
+    user: "root",
+    password: "password",
+    database: "employee_catalog"
+});
 
 async function options() {
     await inquirer.prompt({
@@ -90,40 +95,72 @@ async function viewOptions() {
 
 function addDepartment() {
     console.log("Adding new department");
+    const department = await inquirer.prompt([
+        {
+            type: "input",
+            name: "name",
+            message: "Enter department name:"
+        }
+    ]);
 
-    const connection = mysql.createConnection({
-        host: "localhost",
-        user: "root",
-        password: "password",
-        database: "employee_catalog",
-        multipleStatements: true
-    });
-    connection.connect(async function (err) {
-        if (err) throw err;
-
-        const department = await inquirer.prompt([
-            {
-                type: "input",
-                name: "name",
-                message: "Enter department name:"
-            }
-        ]);
-
-        connection.query("INSERT INTO department SET ?",
+    connection.query("INSERT INTO department SET ?",
         {
             name: department.name,
         },
         function(err, res) {
             if (err) throw err;
-            connection.destroy();
             console.log(res.affectedRows + " dept inserted!\n");
             options();
-        });
-    });
+        }
+    );
 }
 
 function addRole() {
-    console.log("Adding new role");
+    connection.query(
+        "SELECT * FROM department",
+        async function (err, res) {
+            if (err) throw err;
+            const departmentChoices = [];
+            for (let i = 0; i < res.length; i++) {
+                departmentChoices.push({value: res[i].id, name: res[i].name});
+            }
+
+            const role = await inquirer.prompt([
+                {
+                    type: "input",
+                    name: "title",
+                    message: "Enter role's title:"
+                },
+                {
+                    type: "input",
+                    name: "salary",
+                    message: "Salary:"
+                },
+                {
+                    type: "list",
+                    name: "departmentId",
+                    message: "Department:",
+                    choices: departmentChoices
+                }
+            ]);
+            console.log(role);
+
+
+            connection.query(
+                "INSERT INTO role SET ?",
+                {
+                    title: role.title,
+                    salary: role.salary,
+                    department_id: role.departmentId
+                },
+                function(err, res) {
+                    if (err) throw err;
+                    console.log("Role created!");
+                    options();
+                }
+            );
+        }
+    );
 }
 
 function addEmployee() {
@@ -143,7 +180,11 @@ function viewEmployee() {
 }
 
 function exit() {
+    connection.destroy();
     console.log("\nGoodbye");
 }
 
-options();
+connection.connect(function(err) {
+    if (err) throw err;
+    options();
+});
