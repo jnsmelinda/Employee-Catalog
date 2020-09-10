@@ -167,20 +167,20 @@ async function addEmployee() {
     const employee = await inquirer.prompt([
         {
             type: "input",
-            name: "first_name",
+            name: "firstName",
             message: "First name:"
         },
         {
             type: "input",
-            name: "last_name",
+            name: "lastName",
             message: "Last name:"
         },
     ]);
 
     connection.query("INSERT INTO employee SET ?",
         {
-            first_name: employee.first_name,
-            last_name: employee.last_name,
+            first_name: employee.firstName,
+            last_name: employee.lastName,
             role_id : 1,
         },
         function(err, res) {
