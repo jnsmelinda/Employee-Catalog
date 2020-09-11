@@ -73,7 +73,8 @@ async function viewOptions() {
         choices: [
             "Department",
             "Role",
-            "Employee"
+            "Employee",
+            "Employee by Manager"
         ]
     }).then(function (answer) {
         switch (answer.action) {
@@ -92,6 +93,9 @@ async function viewOptions() {
                 LEFT JOIN department d ON r.department_id = d.id
                 LEFT JOIN employee m ON e.manager_id = m.id`;
                 viewObject(empQuery);
+                break;
+            case "Employee by Manager":
+                viewEmployeeByManager();
                 break;
         }
     });
@@ -119,7 +123,6 @@ async function updateOptions() {
 }
 
 async function addDepartment() {
-    console.log("Adding new department");
     const department = await inquirer.prompt([
         {
             type: "input",
@@ -188,7 +191,6 @@ function addRole() {
 }
 
 async function addEmployee() {
-    console.log("addEmployee");
     connection.query(
         "SELECT * FROM employee",
         function (err, res) {
@@ -251,7 +253,6 @@ async function addEmployee() {
 }
 
 async function updateEmployeeRoles() {
-    console.log("update employee roles");
     connection.query(
         "SELECT * FROM employee",
         function (err, res) {
@@ -304,7 +305,6 @@ async function updateEmployeeRoles() {
 }
 
 function updateEmployeeManager() {
-    console.log("update employee roles");
     connection.query(
         "SELECT * FROM employee",
         async function (err, res) {
@@ -352,6 +352,38 @@ function viewObject(query) {
             if (err) throw err;
             console.table(res);
             options();
+        }
+    );
+}
+
+function viewEmployeeByManager() {
+    connection.query(
+        "SELECT * FROM employee",
+        async function (err, res) {
+            if (err) throw err;
+            const managers = [{value: null, name: 'None'}];
+            for (let i = 0; i < res.length; i++) {
+                managers.push({value: res[i].id, name: `${res[i].first_name} ${res[i].last_name}`});
+            }
+
+            const manager = await inquirer.prompt([
+                {
+                type: "list",
+                name: "id",
+                message: "choose manager:",
+                choices: managers
+                }
+            ]);
+
+            connection.query(
+                "SELECT * FROM employee WHERE manager_id = ?",
+                manager.id,
+                function(err, res) {
+                    if (err) throw err;
+                    console.table(res);
+                    options();
+                }
+            );
         }
     );
 }
