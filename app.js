@@ -78,13 +78,13 @@ async function viewOptions() {
     }).then(function (answer) {
         switch (answer.action) {
             case "Department":
-                viewDepartment();
+                viewObject("department");
                 break;
             case "Role":
-                viewRole();
+                viewObject("role");
                 break;
             case "Employee":
-                viewEmployee();
+                viewObject("employee");
                 break;
         }
     })
@@ -275,24 +275,16 @@ async function updateEmployeeRoles() {
     );
 }
 
-function viewDepartment() {
-    console.log("view department");
+function viewObject(objectName) {
     connection.query(
-        "SELECT * FROM department",
+        "SELECT * FROM ??",
+        objectName,
         function (err, res) {
             if (err) throw err;
             console.table(res);
             options();
         }
     );
-}
-
-function viewRole() {
-    console.log("view role");
-}
-
-function viewEmployee() {
-    console.log("update Employee");
 }
 
 function exit() {
