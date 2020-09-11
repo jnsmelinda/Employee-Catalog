@@ -18,7 +18,7 @@ async function options() {
         choices: [
             "Add department, role or employees",
             "View department, role or employees",
-            "Update employee roles",
+            "Update employee data",
             "exit"
         ]
 
@@ -30,8 +30,8 @@ async function options() {
             case "View department, role or employees":
                 viewOptions();
                 break;
-            case "Update employee roles":
-                updateEmployeeRoles();
+            case "Update employee data":
+                updateOptions();
                 break;
             case "exit":
                 exit();
@@ -94,7 +94,28 @@ async function viewOptions() {
                 viewObject(empQuery);
                 break;
         }
-    })
+    });
+}
+
+async function updateOptions() {
+    await inquirer.prompt({
+        name: "action",
+        type: "rawlist",
+        message: "What would you like to update?",
+        choices: [
+            "Employee role",
+            "Employee manager"
+        ]
+    }).then(function (answer) {
+        switch (answer.action) {
+            case "Employee role":
+                updateEmployeeRoles();
+                break;
+            case "Employee manager":
+                updateEmployeeManager();
+                break;
+        }
+    });
 }
 
 async function addDepartment() {
@@ -282,6 +303,48 @@ async function updateEmployeeRoles() {
     );
 }
 
+function updateEmployeeManager() {
+    console.log("update employee roles");
+    connection.query(
+        "SELECT * FROM employee",
+        async function (err, res) {
+            if (err) throw err;
+            const employees = [{value: null, name: 'None'}];
+            for (let i = 0; i < res.length; i++) {
+                employees.push({value: res[i].id, name: `${res[i].first_name} ${res[i].last_name}`});
+            }
+
+            const employee = await inquirer.prompt([
+                {
+                type: "list",
+                name: "id",
+                message: "choose employee:",
+                choices: employees
+                }
+            ]);
+
+            const newManager = await inquirer.prompt([
+                {
+                    type: "list",
+                    name: "id",
+                    meassage: "choolse new manager:",
+                    choices: employees
+                }
+            ]);
+
+        connection.query(
+            "UPDATE employee SET manager_id = ? WHERE id = ?",
+            [newManager.id, employee.id],
+            function(err, res) {
+                if (err) throw err;
+                console.log(res.affectedRows + " employee updated!\n");
+                options();
+            }
+            );
+        }
+    );
+}
+
 function viewObject(query) {
     connection.query(
         query,
@@ -302,8 +365,3 @@ connection.connect(function(err) {
     if (err) throw err;
     options();
 });
-
-// SELECT e.id, e.first_name, e.last_name, r.title, d.name AS department, r.salary, CONCAT(m.first_name, ' ', m.last_name) AS manager FROM employee e
-// LEFT JOIN role r ON e.role_id = r.id
-// LEFT JOIN department d ON r.department_id = d.id
-// LEFT JOIN employee m ON e.manager_id = m.id
