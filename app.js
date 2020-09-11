@@ -64,10 +64,6 @@ async function addOptions() {
     })
 }
 
-async function updateEmployeeRoles() {
-    console.log("update employee roles");
-}
-
 async function viewOptions() {
     await inquirer.prompt({
         name: "action",
@@ -218,6 +214,59 @@ async function addEmployee() {
                             console.log(res.affectedRows + " employee inserted!\n");
                             options();
                         }
+                    );
+                }
+            );
+        }
+    );
+}
+
+async function updateEmployeeRoles() {
+    console.log("update employee roles");
+    connection.query(
+        "SELECT * FROM employee",
+        function (err, res) {
+            if (err) throw err;
+            const employees = [];
+            for (let i = 0; i < res.length; i++) {
+                employees.push({value: res[i].id, name: `${res[i].first_name} ${res[i].last_name}`});
+            }
+
+            connection.query(
+                "SELECT * FROM role",
+                async function (err, res) {
+                    if (err) throw err;
+                    const roles = [];
+                    for (let i = 0; i < res.length; i++) {
+                        roles.push({value: res[i].id, name: res[i].title});
+                    }
+
+                const employee = await inquirer.prompt([
+                    {
+                    type: "list",
+                    name: "id",
+                    message: "choose employee:",
+                    choices: employees
+                    }
+                ]);
+
+                const newRole = await inquirer.prompt([
+                    {
+                        type: "list",
+                        name: "id",
+                        meassage: "roles",
+                        choices: roles
+                    }
+                ])
+
+                connection.query(
+                    "UPDATE employee SET role_id = ? WHERE id = ?",
+                    [newRole.id, employee.id],
+                    function(err, res) {
+                        if (err) throw err;
+                        console.log(res.affectedRows + " employee updated!\n");
+                        options();
+                    }
                     );
                 }
             );
