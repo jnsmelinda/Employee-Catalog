@@ -19,6 +19,7 @@ async function options() {
             "Add department, role or employees",
             "View department, role or employees",
             "Update employee data",
+            "Delete department, role or employee",
             "exit"
         ]
 
@@ -32,6 +33,9 @@ async function options() {
                 break;
             case "Update employee data":
                 updateOptions();
+                break;
+            case "Delete department, role or employee":
+                deleteOptions();
                 break;
             case "exit":
                 exit();
@@ -117,6 +121,31 @@ async function updateOptions() {
                 break;
             case "Employee manager":
                 updateEmployeeManager();
+                break;
+        }
+    });
+}
+
+async function deleteOptions() {
+    await inquirer.prompt({
+        name: "action",
+        type: "rawlist",
+        message: "What would you like to delete?",
+        choices: [
+            "Department",
+            "Employee",
+            "Role"
+        ]
+    }).then(function (answer) {
+        switch (answer.action) {
+            case "Department":
+                deleteDepartment();
+                break;
+            case "Employee":
+                deleteEmployee();
+                break;
+            case "Role":
+                deleteRole();
                 break;
         }
     });
@@ -381,6 +410,38 @@ function viewEmployeeByManager() {
                 function(err, res) {
                     if (err) throw err;
                     console.table(res);
+                    options();
+                }
+            );
+        }
+    );
+}
+
+function deleteDepartment() {
+    connection.query(
+        "SELECT * FROM department",
+        async function (err, res) {
+            if (err) throw err;
+            const departments = [];
+            for (let i = 0; i < res.length; i++) {
+                departments.push({value: res[i].id, name: `${res[i].name}`});
+            }
+
+            const department = await inquirer.prompt([
+                {
+                type: "list",
+                name: "id",
+                message: "choose a department:",
+                choices: departments
+                }
+            ]);
+
+            connection.query(
+                "DELETE FROM department WHERE id = ?",
+                department.id,
+                function(err, res) {
+                    if (err) throw err;
+                    console.log("department deleted\n");
                     options();
                 }
             );
