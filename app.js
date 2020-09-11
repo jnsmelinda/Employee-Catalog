@@ -78,13 +78,20 @@ async function viewOptions() {
     }).then(function (answer) {
         switch (answer.action) {
             case "Department":
-                viewObject("department");
+                const deptQuery = `SELECT * FROM department`;
+                viewObject(deptQuery);
                 break;
             case "Role":
-                viewObject("role");
+                const roleQuery = `SELECT r.id, r.title, r.salary, d.name AS department FROM role r
+                LEFT JOIN department d ON r.department_id = d.id`;
+                viewObject(roleQuery);
                 break;
             case "Employee":
-                viewObject("employee");
+                const empQuery = `SELECT e.id, e.first_name, e.last_name, r.title, d.name AS department, r.salary, CONCAT(m.first_name, ' ', m.last_name) AS manager FROM employee e
+                LEFT JOIN role r ON e.role_id = r.id
+                LEFT JOIN department d ON r.department_id = d.id
+                LEFT JOIN employee m ON e.manager_id = m.id`;
+                viewObject(empQuery);
                 break;
         }
     })
@@ -170,12 +177,12 @@ async function addEmployee() {
                 managerChoices.push({value: res[i].id, name: `${res[i].first_name} ${res[i].last_name}`});
             }
             connection.query(
-                "SELECT * FROM department",
+                "SELECT * FROM role",
                 async function (err, res) {
                     if (err) throw err;
                     const roles = [];
                     for (let i = 0; i < res.length; i++) {
-                        roles.push({value: res[i].id, name: res[i].name});
+                        roles.push({value: res[i].id, name: res[i].title});
                     }
 
                     const employee = await inquirer.prompt([
@@ -275,10 +282,9 @@ async function updateEmployeeRoles() {
     );
 }
 
-function viewObject(objectName) {
+function viewObject(query) {
     connection.query(
-        "SELECT * FROM ??",
-        objectName,
+        query,
         function (err, res) {
             if (err) throw err;
             console.table(res);
@@ -296,3 +302,8 @@ connection.connect(function(err) {
     if (err) throw err;
     options();
 });
+
+// SELECT e.id, e.first_name, e.last_name, r.title, d.name AS department, r.salary, CONCAT(m.first_name, ' ', m.last_name) AS manager FROM employee e
+// LEFT JOIN role r ON e.role_id = r.id
+// LEFT JOIN department d ON r.department_id = d.id
+// LEFT JOIN employee m ON e.manager_id = m.id
