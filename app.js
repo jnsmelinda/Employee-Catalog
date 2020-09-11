@@ -1,6 +1,7 @@
 const mysql = require('mysql');
 const initdb = require('./db-init');
 const inquirer = require("inquirer");
+const cTable = require('console.table');
 
 const connection = mysql.createConnection({
     host: "localhost",
@@ -276,6 +277,14 @@ async function updateEmployeeRoles() {
 
 function viewDepartment() {
     console.log("view department");
+    connection.query(
+        "SELECT * FROM department",
+        function (err, res) {
+            if (err) throw err;
+            console.table(res);
+            options();
+        }
+    );
 }
 
 function viewRole() {
