@@ -235,10 +235,7 @@ async function addEmployee() {
                 "SELECT * FROM role",
                 async function (err, res) {
                     if (err) throw err;
-                    const roles = [];
-                    for (let i = 0; i < res.length; i++) {
-                        roles.push({value: res[i].id, name: res[i].title});
-                    }
+                    const roles = getRoles(res);
 
                     const employee = await inquirer.prompt([
                         {
@@ -295,10 +292,7 @@ async function updateEmployeeRoles() {
                 "SELECT * FROM role",
                 async function (err, res) {
                     if (err) throw err;
-                    const roles = [];
-                    for (let i = 0; i < res.length; i++) {
-                        roles.push({value: res[i].id, name: res[i].title});
-                    }
+                    const roles = getRoles(res);
 
                 const employee = await inquirer.prompt([
                     {
@@ -449,10 +443,7 @@ function deleteRole() {
         "SELECT * FROM role",
         async function (err, res) {
             if (err) throw err;
-            const roles = [];
-            for (let i = 0; i < res.length; i++) {
-                roles.push({value: res[i].id, name: `${res[i].title}`});
-            }
+            const roles = getRoles(res);
 
             const role = await inquirer.prompt([
                 {
@@ -507,6 +498,14 @@ function deleteEmployee() {
             );
         }
     );
+}
+
+function getRoles(res) {
+    const roles = [];
+        for (let i = 0; i < res.length; i++) {
+            roles.push({value: res[i].id, name: `${res[i].title}`});
+        }
+    return roles;
 }
 
 function getEmployees(res) {
