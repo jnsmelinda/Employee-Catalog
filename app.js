@@ -17,7 +17,7 @@ async function options() {
         message: "What would you like to do?",
         choices: [
             "Add department, role or employees",
-            "View department, role or employees",
+            "View department, role, employee data or budget",
             "Update employee data",
             "Delete department, role or employee",
             "exit"
@@ -28,7 +28,7 @@ async function options() {
             case "Add department, role or employees":
                 await addOptions();
                 break;
-            case "View department, role or employees":
+            case "View department, role, employee data or budget":
                 viewOptions();
                 break;
             case "Update employee data":
@@ -75,31 +75,31 @@ async function viewOptions() {
         type: "rawlist",
         message: "What would you like to view?",
         choices: [
-            "Department",
-            "Role",
-            "Employee",
-            "Employee by Manager",
+            "Departments",
+            "Roles",
+            "Employees",
+            "Employees by Manager",
             "Department budget"
         ]
     }).then(function (answer) {
         switch (answer.action) {
-            case "Department":
+            case "Departments":
                 const deptQuery = `SELECT * FROM department`;
                 viewObject(deptQuery);
                 break;
-            case "Role":
+            case "Roles":
                 const roleQuery = `SELECT r.id, r.title, r.salary, d.name AS department FROM role r
                 LEFT JOIN department d ON r.department_id = d.id`;
                 viewObject(roleQuery);
                 break;
-            case "Employee":
+            case "Employees":
                 const empQuery = `SELECT e.id, e.first_name, e.last_name, r.title, d.name AS department, r.salary, CONCAT(m.first_name, ' ', m.last_name) AS manager FROM employee e
                 LEFT JOIN role r ON e.role_id = r.id
                 LEFT JOIN department d ON r.department_id = d.id
                 LEFT JOIN employee m ON e.manager_id = m.id`;
                 viewObject(empQuery);
                 break;
-            case "Employee by Manager":
+            case "Employees by Manager":
                 viewEmployeeByManager();
                 break;
             case "Department budget":
@@ -228,10 +228,9 @@ async function addEmployee() {
         "SELECT * FROM employee",
         function (err, res) {
             if (err) throw err;
-            const managerChoices = [{value: null, name: 'None'}];
-            for (let i = 0; i < res.length; i++) {
-                managerChoices.push({value: res[i].id, name: `${res[i].first_name} ${res[i].last_name}`});
-            }
+            const managerChoices = getEmployees(res);
+            managerChoices.push({value: null, name: 'None'});
+
             connection.query(
                 "SELECT * FROM role",
                 async function (err, res) {
@@ -255,13 +254,13 @@ async function addEmployee() {
                         {
                             type: "list",
                             name: "roleId",
-                            message: "Role:",
+                            message: "Roles:",
                             choices: roles
                         },
                         {
                             type: "list",
                             name: "managerId",
-                            message: "Manager:",
+                            message: "Managers:",
                             choices: managerChoices
                         }
                     ]);
@@ -290,10 +289,7 @@ async function updateEmployeeRoles() {
         "SELECT * FROM employee",
         function (err, res) {
             if (err) throw err;
-            const employees = [];
-            for (let i = 0; i < res.length; i++) {
-                employees.push({value: res[i].id, name: `${res[i].first_name} ${res[i].last_name}`});
-            }
+            const employees = getEmployees(res);
 
             connection.query(
                 "SELECT * FROM role",
@@ -342,10 +338,9 @@ function updateEmployeeManager() {
         "SELECT * FROM employee",
         async function (err, res) {
             if (err) throw err;
-            const employees = [{value: null, name: 'None'}];
-            for (let i = 0; i < res.length; i++) {
-                employees.push({value: res[i].id, name: `${res[i].first_name} ${res[i].last_name}`});
-            }
+            const employees = getEmployees(res);
+            employees.push({value: null, name: 'None'});
+
 
             const employee = await inquirer.prompt([
                 {
@@ -360,7 +355,7 @@ function updateEmployeeManager() {
                 {
                     type: "list",
                     name: "id",
-                    meassage: "Choolse the new manager:",
+                    meassage: "Choose the new manager:",
                     choices: employees
                 }
             ]);
@@ -394,16 +389,13 @@ function viewEmployeeByManager() {
         "SELECT * FROM employee",
         async function (err, res) {
             if (err) throw err;
-            const managers = [{value: null, name: 'None'}];
-            for (let i = 0; i < res.length; i++) {
-                managers.push({value: res[i].id, name: `${res[i].first_name} ${res[i].last_name}`});
-            }
+            const managers = getEmployees(res);
 
             const manager = await inquirer.prompt([
                 {
                 type: "list",
                 name: "id",
-                message: "Choose manager:",
+                message: "Choose a manager:",
                 choices: managers
                 }
             ]);
@@ -491,10 +483,7 @@ function deleteEmployee() {
         "SELECT * FROM employee",
         async function (err, res) {
             if (err) throw err;
-            const employees = [];
-            for (let i = 0; i < res.length; i++) {
-                employees.push({value: res[i].id, name: `${res[i].first_name} ${res[i].last_name}`});
-            }
+            const employees = getEmployees(res);
 
             const employee = await inquirer.prompt([
                 {
@@ -518,6 +507,14 @@ function deleteEmployee() {
             );
         }
     );
+}
+
+function getEmployees(res) {
+    let employees = [];
+    for (let i = 0; i < res.length; i++) {
+        employees.push({value: res[i].id, name: `${res[i].first_name} ${res[i].last_name}`});
+    }
+    return employees;
 }
 
 function getDepartments(res) {
