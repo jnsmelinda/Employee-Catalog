@@ -440,13 +440,91 @@ function deleteDepartment() {
                 "DELETE FROM department WHERE id = ?",
                 department.id,
                 function(err, res) {
-                    if (err) throw err;
-                    console.log("department deleted\n");
-                    options();
+                    if (err) errorHandlingForDelete(err);
+                    else {
+                        console.log("Department deleted.\n");
+                        options();
+                    }
                 }
             );
         }
     );
+}
+
+function deleteRole() {
+    connection.query(
+        "SELECT * FROM role",
+        async function (err, res) {
+            if (err) throw err;
+            const roles = [];
+            for (let i = 0; i < res.length; i++) {
+                roles.push({value: res[i].id, name: `${res[i].title}`});
+            }
+
+            const role = await inquirer.prompt([
+                {
+                type: "list",
+                name: "id",
+                message: "choose a role:",
+                choices: roles
+                }
+            ]);
+
+            connection.query(
+                "DELETE FROM role WHERE id = ?",
+                role.id,
+                function(err, res) {
+                    if (err) errorHandlingForDelete(err);
+                    else {
+                        console.log("Role deleted.\n");
+                        options();
+                    }
+                }
+            );
+        }
+    );
+}
+
+function deleteEmployee() {
+    connection.query(
+        "SELECT * FROM employee",
+        async function (err, res) {
+            if (err) throw err;
+            const employees = [];
+            for (let i = 0; i < res.length; i++) {
+                employees.push({value: res[i].id, name: `${res[i].first_name} ${res[i].last_name}`});
+            }
+
+            const employee = await inquirer.prompt([
+                {
+                type: "list",
+                name: "id",
+                message: "choose an employee:",
+                choices: employees
+                }
+            ]);
+
+            connection.query(
+                "DELETE FROM employee WHERE id = ?",
+                employee.id,
+                function(err, res) {
+                    if (err) errorHandlingForDelete(err);
+                    else {
+                        console.log("Employee deleted.\n");
+                        options();
+                    }
+                }
+            );
+        }
+    );
+}
+
+function errorHandlingForDelete(err) {
+    if (err.errno === 1451) {
+        console.log("There is a reference to this resource. You need to delete the reference first.\n");
+        options();
+    }
+    else throw err;
 }
 
 function exit() {
