@@ -185,10 +185,7 @@ function addRole() {
         "SELECT * FROM department",
         async function (err, res) {
             if (err) throw err;
-            const departmentChoices = [];
-            for (let i = 0; i < res.length; i++) {
-                departmentChoices.push({value: res[i].id, name: res[i].name});
-            }
+            const departmentChoices = getDepartments(res);
 
             const role = await inquirer.prompt([
                 {
@@ -208,7 +205,6 @@ function addRole() {
                     choices: departmentChoices
                 }
             ]);
-            console.log(role);
 
             connection.query(
                 "INSERT INTO role SET ?",
@@ -219,7 +215,7 @@ function addRole() {
                 },
                 function(err, res) {
                     if (err) throw err;
-                    console.log("Role created!");
+                    console.log("Role created!\n");
                     options();
                 }
             );
@@ -430,17 +426,14 @@ function deleteDepartment() {
         "SELECT * FROM department",
         async function (err, res) {
             if (err) throw err;
-            const departments = [];
-            for (let i = 0; i < res.length; i++) {
-                departments.push({value: res[i].id, name: `${res[i].name}`});
-            }
+            const departmentChoices = getDepartments(res);
 
             const department = await inquirer.prompt([
                 {
                 type: "list",
                 name: "id",
                 message: "Choose a department:",
-                choices: departments
+                choices: departmentChoices
                 }
             ]);
 
@@ -525,6 +518,14 @@ function deleteEmployee() {
             );
         }
     );
+}
+
+function getDepartments(res) {
+    let departmentChoices = [];
+    for (let i = 0; i < res.length; i++) {
+        departmentChoices.push({value: res[i].id, name: res[i].name});
+    }
+    return departmentChoices;
 }
 
 function errorHandlingForDelete(err) {
