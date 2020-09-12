@@ -367,17 +367,6 @@ function updateEmployeeManager() {
     );
 }
 
-function viewObject(query) {
-    connection.query(
-        query,
-        function (err, res) {
-            if (err) throw err;
-            console.table(res);
-            options();
-        }
-    );
-}
-
 function viewEmployeeByManager() {
     connection.query(
         "SELECT * FROM employee",
@@ -496,6 +485,17 @@ function deleteEmployee() {
                     }
                 }
             );
+        }
+    );
+}
+
+function viewObject(query) {
+    connection.query(
+        query,
+        function (err, res) {
+            if (err) throw err;
+            console.table(res);
+            options();
         }
     );
 }
