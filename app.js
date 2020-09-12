@@ -174,7 +174,7 @@ async function addDepartment() {
         },
         function(err, res) {
             if (err) throw err;
-            console.log(res.affectedRows + " dept inserted!\n");
+            console.log("Department inserted!\n");
             options();
         }
     );
@@ -279,7 +279,7 @@ async function addEmployee() {
                         },
                         function(err, res) {
                             if (err) throw err;
-                            console.log(res.affectedRows + " employee inserted!\n");
+                            console.log("Employee inserted!\n");
                             options();
                         }
                     );
@@ -312,7 +312,7 @@ async function updateEmployeeRoles() {
                     {
                     type: "list",
                     name: "id",
-                    message: "choose employee:",
+                    message: "Choose an employee:",
                     choices: employees
                     }
                 ]);
@@ -321,7 +321,7 @@ async function updateEmployeeRoles() {
                     {
                         type: "list",
                         name: "id",
-                        meassage: "roles",
+                        meassage: "Roles:",
                         choices: roles
                     }
                 ])
@@ -331,7 +331,7 @@ async function updateEmployeeRoles() {
                     [newRole.id, employee.id],
                     function(err, res) {
                         if (err) throw err;
-                        console.log(res.affectedRows + " employee updated!\n");
+                        console.log("Employee updated!\n");
                         options();
                     }
                     );
@@ -355,7 +355,7 @@ function updateEmployeeManager() {
                 {
                 type: "list",
                 name: "id",
-                message: "choose employee:",
+                message: "Choose an employee:",
                 choices: employees
                 }
             ]);
@@ -364,7 +364,7 @@ function updateEmployeeManager() {
                 {
                     type: "list",
                     name: "id",
-                    meassage: "choolse new manager:",
+                    meassage: "Choolse the new manager:",
                     choices: employees
                 }
             ]);
@@ -374,7 +374,7 @@ function updateEmployeeManager() {
             [newManager.id, employee.id],
             function(err, res) {
                 if (err) throw err;
-                console.log(res.affectedRows + " employee updated!\n");
+                console.log("Employee updated!\n");
                 options();
             }
             );
@@ -407,7 +407,7 @@ function viewEmployeeByManager() {
                 {
                 type: "list",
                 name: "id",
-                message: "choose manager:",
+                message: "Choose manager:",
                 choices: managers
                 }
             ]);
@@ -439,7 +439,7 @@ function deleteDepartment() {
                 {
                 type: "list",
                 name: "id",
-                message: "choose a department:",
+                message: "Choose a department:",
                 choices: departments
                 }
             ]);
@@ -473,7 +473,7 @@ function deleteRole() {
                 {
                 type: "list",
                 name: "id",
-                message: "choose a role:",
+                message: "Choose a role:",
                 choices: roles
                 }
             ]);
@@ -507,7 +507,7 @@ function deleteEmployee() {
                 {
                 type: "list",
                 name: "id",
-                message: "choose an employee:",
+                message: "Choose an employee:",
                 choices: employees
                 }
             ]);
