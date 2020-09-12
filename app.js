@@ -78,7 +78,8 @@ async function viewOptions() {
             "Department",
             "Role",
             "Employee",
-            "Employee by Manager"
+            "Employee by Manager",
+            "Department budget"
         ]
     }).then(function (answer) {
         switch (answer.action) {
@@ -100,6 +101,13 @@ async function viewOptions() {
                 break;
             case "Employee by Manager":
                 viewEmployeeByManager();
+                break;
+            case "Department budget":
+                const departmentBudget = `SELECT d.id, d.name, SUM(r.salary) AS budget FROM employee e
+                LEFT JOIN role r ON e.role_id = r.id
+                LEFT JOIN department d ON r.department_id = d.id
+                GROUP BY d.id`;
+                viewObject(departmentBudget);
                 break;
         }
     });
