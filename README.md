@@ -44,9 +44,6 @@ This repository is protected under the [MIT](https://choosealicense.com/licenses
 ## Contribution
 Please contribute to this project by opening a Pull Request and following the `eslint` rules and the [Code of Conduct](https://www.contributor-covenant.org/version/2/0/code_of_conduct/).
 
-## Tests
-Type `npm run test` to run the provided jest unit tests.
-
 ## Questions
 You can contact me about issues and suggestions in [Email](mailto:jns.melinda@gmail.com), you can also find me on [Github](https://github.com/jnsmelinda).
 
