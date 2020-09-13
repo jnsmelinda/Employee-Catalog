@@ -32,7 +32,7 @@ At first, you need to have [node.js](https://nodejs.org/) installed, then you ne
 
 ## Demo
 
-You can watch the demo video [here](https://youtu.be/y7N_K604ENk).
+You can watch the demo video [here](https://youtu.be/0c9_DogCEpg).
 
 ![demo-image](/demo/demo1.png)
 ![demo-image](/demo/demo2.png)
