@@ -1,7 +1,7 @@
-const mysql = require('mysql');
-const initdb = require('./db-init');
+const mysql = require("mysql");
+const initdb = require("./db-init");
 const inquirer = require("inquirer");
-const cTable = require('console.table');
+require("console.table");
 
 const connection = mysql.createConnection({
     host: "localhost",
@@ -23,25 +23,25 @@ async function options() {
             "exit"
         ]
 
-    }).then(async function (answer) {
+    }).then(async function(answer) {
         switch (answer.action) {
-            case "Add department, role or employees":
-                await addOptions();
-                break;
-            case "View department, role, employee data or budget":
-                viewOptions();
-                break;
-            case "Update employee data":
-                updateOptions();
-                break;
-            case "Delete department, role or employee":
-                deleteOptions();
-                break;
-            case "exit":
-                exit();
-                break;
+        case "Add department, role or employees":
+            await addOptions();
+            break;
+        case "View department, role, employee data or budget":
+            viewOptions();
+            break;
+        case "Update employee data":
+            updateOptions();
+            break;
+        case "Delete department, role or employee":
+            deleteOptions();
+            break;
+        case "exit":
+            exit();
+            break;
         }
-    })
+    });
 }
 
 async function addOptions() {
@@ -54,19 +54,19 @@ async function addOptions() {
             "Role",
             "Employee"
         ]
-    }).then(function (answer) {
+    }).then(function(answer) {
         switch (answer.action) {
-            case "Department":
-                addDepartment();
-                break;
-            case "Role":
-                addRole();
-                break;
-            case "Employee":
-                addEmployee();
-                break;
+        case "Department":
+            addDepartment();
+            break;
+        case "Role":
+            addRole();
+            break;
+        case "Employee":
+            addEmployee();
+            break;
         }
-    })
+    });
 }
 
 async function viewOptions() {
@@ -81,34 +81,35 @@ async function viewOptions() {
             "Employees by Manager",
             "Department budget"
         ]
-    }).then(function (answer) {
+    }).then(function(answer) {
         switch (answer.action) {
-            case "Departments":
-                const deptQuery = `SELECT * FROM department`;
-                viewObject(deptQuery);
-                break;
-            case "Roles":
-                const roleQuery = `SELECT r.id, r.title, r.salary, d.name AS department FROM role r
+        case "Departments":
+            const deptQuery = "SELECT * FROM department";
+            viewObject(deptQuery);
+            break;
+        case "Roles":
+            const roleQuery = `SELECT r.id, r.title, r.salary, d.name AS department FROM role r
                 LEFT JOIN department d ON r.department_id = d.id`;
-                viewObject(roleQuery);
-                break;
-            case "Employees":
-                const empQuery = `SELECT e.id, e.first_name, e.last_name, r.title, d.name AS department, r.salary, CONCAT(m.first_name, ' ', m.last_name) AS manager FROM employee e
+            viewObject(roleQuery);
+            break;
+        case "Employees":
+            const empQuery = `SELECT e.id, e.first_name, e.last_name, r.title, d.name AS department, r.salary,
+                CONCAT(m.first_name, ' ', m.last_name) AS manager FROM employee e
                 LEFT JOIN role r ON e.role_id = r.id
                 LEFT JOIN department d ON r.department_id = d.id
                 LEFT JOIN employee m ON e.manager_id = m.id`;
-                viewObject(empQuery);
-                break;
-            case "Employees by Manager":
-                viewEmployeeByManager();
-                break;
-            case "Department budget":
-                const departmentBudget = `SELECT d.id, d.name, SUM(r.salary) AS budget FROM employee e
+            viewObject(empQuery);
+            break;
+        case "Employees by Manager":
+            viewEmployeeByManager();
+            break;
+        case "Department budget":
+            const departmentBudget = `SELECT d.id, d.name, SUM(r.salary) AS budget FROM employee e
                 LEFT JOIN role r ON e.role_id = r.id
                 LEFT JOIN department d ON r.department_id = d.id
                 GROUP BY d.id`;
-                viewObject(departmentBudget);
-                break;
+            viewObject(departmentBudget);
+            break;
         }
     });
 }
@@ -122,14 +123,14 @@ async function updateOptions() {
             "Employee role",
             "Employee manager"
         ]
-    }).then(function (answer) {
+    }).then(function(answer) {
         switch (answer.action) {
-            case "Employee role":
-                updateEmployeeRoles();
-                break;
-            case "Employee manager":
-                updateEmployeeManager();
-                break;
+        case "Employee role":
+            updateEmployeeRoles();
+            break;
+        case "Employee manager":
+            updateEmployeeManager();
+            break;
         }
     });
 }
@@ -144,17 +145,17 @@ async function deleteOptions() {
             "Employee",
             "Role"
         ]
-    }).then(function (answer) {
+    }).then(function(answer) {
         switch (answer.action) {
-            case "Department":
-                deleteDepartment();
-                break;
-            case "Employee":
-                deleteEmployee();
-                break;
-            case "Role":
-                deleteRole();
-                break;
+        case "Department":
+            deleteDepartment();
+            break;
+        case "Employee":
+            deleteEmployee();
+            break;
+        case "Role":
+            deleteRole();
+            break;
         }
     });
 }
@@ -183,7 +184,7 @@ async function addDepartment() {
 function addRole() {
     connection.query(
         "SELECT * FROM department",
-        async function (err, res) {
+        async function(err, res) {
             if (err) throw err;
             const departmentChoices = getDepartments(res);
 
@@ -226,14 +227,14 @@ function addRole() {
 async function addEmployee() {
     connection.query(
         "SELECT * FROM employee",
-        function (err, res) {
+        function(err, res) {
             if (err) throw err;
             const managerChoices = getEmployees(res);
-            managerChoices.push({value: null, name: 'None'});
+            managerChoices.push({value: null, name: "None"});
 
             connection.query(
                 "SELECT * FROM role",
-                async function (err, res) {
+                async function(err, res) {
                     if (err) throw err;
                     const roles = getRoles(res);
 
@@ -266,7 +267,7 @@ async function addEmployee() {
                         {
                             first_name: employee.firstName,
                             last_name: employee.lastName,
-                            role_id : employee.roleId,
+                            role_id: employee.roleId,
                             manager_id: employee.managerId
                         },
                         function(err, res) {
@@ -284,42 +285,42 @@ async function addEmployee() {
 async function updateEmployeeRoles() {
     connection.query(
         "SELECT * FROM employee",
-        function (err, res) {
+        function(err, res) {
             if (err) throw err;
             const employees = getEmployees(res);
 
             connection.query(
                 "SELECT * FROM role",
-                async function (err, res) {
+                async function(err, res) {
                     if (err) throw err;
                     const roles = getRoles(res);
 
-                const employee = await inquirer.prompt([
-                    {
-                    type: "list",
-                    name: "id",
-                    message: "Choose an employee:",
-                    choices: employees
-                    }
-                ]);
+                    const employee = await inquirer.prompt([
+                        {
+                            type: "list",
+                            name: "id",
+                            message: "Choose an employee:",
+                            choices: employees
+                        }
+                    ]);
 
-                const newRole = await inquirer.prompt([
-                    {
-                        type: "list",
-                        name: "id",
-                        meassage: "Roles:",
-                        choices: roles
-                    }
-                ])
+                    const newRole = await inquirer.prompt([
+                        {
+                            type: "list",
+                            name: "id",
+                            meassage: "Roles:",
+                            choices: roles
+                        }
+                    ]);
 
-                connection.query(
-                    "UPDATE employee SET role_id = ? WHERE id = ?",
-                    [newRole.id, employee.id],
-                    function(err, res) {
-                        if (err) throw err;
-                        console.log("Employee updated!\n");
-                        options();
-                    }
+                    connection.query(
+                        "UPDATE employee SET role_id = ? WHERE id = ?",
+                        [newRole.id, employee.id],
+                        function(err, res) {
+                            if (err) throw err;
+                            console.log("Employee updated!\n");
+                            options();
+                        }
                     );
                 }
             );
@@ -330,18 +331,18 @@ async function updateEmployeeRoles() {
 function updateEmployeeManager() {
     connection.query(
         "SELECT * FROM employee",
-        async function (err, res) {
+        async function(err, res) {
             if (err) throw err;
             const employees = getEmployees(res);
-            employees.push({value: null, name: 'None'});
+            employees.push({value: null, name: "None"});
 
 
             const employee = await inquirer.prompt([
                 {
-                type: "list",
-                name: "id",
-                message: "Choose an employee:",
-                choices: employees
+                    type: "list",
+                    name: "id",
+                    message: "Choose an employee:",
+                    choices: employees
                 }
             ]);
 
@@ -354,14 +355,14 @@ function updateEmployeeManager() {
                 }
             ]);
 
-        connection.query(
-            "UPDATE employee SET manager_id = ? WHERE id = ?",
-            [newManager.id, employee.id],
-            function(err, res) {
-                if (err) throw err;
-                console.log("Employee updated!\n");
-                options();
-            }
+            connection.query(
+                "UPDATE employee SET manager_id = ? WHERE id = ?",
+                [newManager.id, employee.id],
+                function(err, res) {
+                    if (err) throw err;
+                    console.log("Employee updated!\n");
+                    options();
+                }
             );
         }
     );
@@ -370,16 +371,16 @@ function updateEmployeeManager() {
 function viewEmployeeByManager() {
     connection.query(
         "SELECT * FROM employee",
-        async function (err, res) {
+        async function(err, res) {
             if (err) throw err;
             const managers = getEmployees(res);
 
             const manager = await inquirer.prompt([
                 {
-                type: "list",
-                name: "id",
-                message: "Choose a manager:",
-                choices: managers
+                    type: "list",
+                    name: "id",
+                    message: "Choose a manager:",
+                    choices: managers
                 }
             ]);
 
@@ -399,16 +400,16 @@ function viewEmployeeByManager() {
 function deleteDepartment() {
     connection.query(
         "SELECT * FROM department",
-        async function (err, res) {
+        async function(err, res) {
             if (err) throw err;
             const departmentChoices = getDepartments(res);
 
             const department = await inquirer.prompt([
                 {
-                type: "list",
-                name: "id",
-                message: "Choose a department:",
-                choices: departmentChoices
+                    type: "list",
+                    name: "id",
+                    message: "Choose a department:",
+                    choices: departmentChoices
                 }
             ]);
 
@@ -430,16 +431,16 @@ function deleteDepartment() {
 function deleteRole() {
     connection.query(
         "SELECT * FROM role",
-        async function (err, res) {
+        async function(err, res) {
             if (err) throw err;
             const roles = getRoles(res);
 
             const role = await inquirer.prompt([
                 {
-                type: "list",
-                name: "id",
-                message: "Choose a role:",
-                choices: roles
+                    type: "list",
+                    name: "id",
+                    message: "Choose a role:",
+                    choices: roles
                 }
             ]);
 
@@ -461,16 +462,16 @@ function deleteRole() {
 function deleteEmployee() {
     connection.query(
         "SELECT * FROM employee",
-        async function (err, res) {
+        async function(err, res) {
             if (err) throw err;
             const employees = getEmployees(res);
 
             const employee = await inquirer.prompt([
                 {
-                type: "list",
-                name: "id",
-                message: "Choose an employee:",
-                choices: employees
+                    type: "list",
+                    name: "id",
+                    message: "Choose an employee:",
+                    choices: employees
                 }
             ]);
 
@@ -492,7 +493,7 @@ function deleteEmployee() {
 function viewObject(query) {
     connection.query(
         query,
-        function (err, res) {
+        function(err, res) {
             if (err) throw err;
             console.table(res);
             options();
@@ -502,14 +503,14 @@ function viewObject(query) {
 
 function getRoles(res) {
     const roles = [];
-        for (let i = 0; i < res.length; i++) {
-            roles.push({value: res[i].id, name: `${res[i].title}`});
-        }
+    for (let i = 0; i < res.length; i++) {
+        roles.push({value: res[i].id, name: `${res[i].title}`});
+    }
     return roles;
 }
 
 function getEmployees(res) {
-    let employees = [];
+    const employees = [];
     for (let i = 0; i < res.length; i++) {
         employees.push({value: res[i].id, name: `${res[i].first_name} ${res[i].last_name}`});
     }
@@ -517,7 +518,7 @@ function getEmployees(res) {
 }
 
 function getDepartments(res) {
-    let departmentChoices = [];
+    const departmentChoices = [];
     for (let i = 0; i < res.length; i++) {
         departmentChoices.push({value: res[i].id, name: res[i].name});
     }
@@ -528,8 +529,7 @@ function errorHandlingForDelete(err) {
     if (err.errno === 1451) {
         console.log("There is a reference to this resource. You need to delete the reference first.\n");
         options();
-    }
-    else throw err;
+    } else throw err;
 }
 
 function exit() {

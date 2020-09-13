@@ -1,4 +1,4 @@
-const mysql = require('mysql');
+const mysql = require("mysql");
 const fs = require("fs");
 
 function initdb(callback) {
@@ -9,28 +9,27 @@ function initdb(callback) {
         multipleStatements: true
     });
 
-    connection.connect(function (err) {
+    connection.connect(function(err) {
         if (err) throw err;
         fs.readFile("schema.sql", "utf8", (err, data) => {
             if (err) throw err;
 
-            connection.query(data, function (err, result) {
+            connection.query(data, function(err, result) {
                 if (err) throw err;
-                connection.query("SELECT COUNT(*) AS size FROM department LIMIT 1", function (err, result) {
+                connection.query("SELECT COUNT(*) AS size FROM department LIMIT 1", function(err, result) {
                     if (err) throw err;
                     if (result[0].size === 0) {
                         fs.readFile("seed.sql", "utf8", (err, data) => {
                             if (err) throw err;
 
-                            connection.query(data, function (err, result) {
+                            connection.query(data, function(err, result) {
                                 if (err) throw err;
                                 console.log("Data populated");
                                 connection.destroy();
                                 callback();
                             });
                         });
-                    }
-                    else {
+                    } else {
                         connection.destroy();
                         callback();
                     }
