@@ -537,7 +537,11 @@ function exit() {
     console.log("\nGoodbye");
 }
 
-connection.connect(function(err) {
-    if (err) throw err;
-    options();
-});
+function start() {
+    connection.connect(function(err) {
+        if (err) throw err;
+        options();
+    });
+}
+
+initdb(start);
