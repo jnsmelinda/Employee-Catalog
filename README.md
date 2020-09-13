@@ -30,13 +30,15 @@ The data than will be stored in a database.
 ## Installation
 At first, you need to have [node.js](https://nodejs.org/) installed, then you need to install the required modules by running `npm install` in the command-line.
 
+## Demo
+
+You can [watch the demo video](https://youtu.be/y7N_K604ENk)
+
+![demo-image](/demo/demo1.png)
+![demo-image](/demo/demo2.png)
+
 ## Usage
 The user needs to open the command-line, navigate to the folder, type `node app.js`, and choose from the menu options and follow the steps to enter the company information.
-
-## Demo
-You can [watch the demo video]().
-
-![demo-image]()
 
 ## License
 This repository is protected under the [MIT](https://choosealicense.com/licenses/mit/) license.
