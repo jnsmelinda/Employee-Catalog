@@ -11,7 +11,7 @@ async function initdb() {
 
     connection.connect(function (err) {
         if (err) throw err;
-        fs.readFile("seed.sql", "utf8", (err, data) => {
+        fs.readFile("schema.sql", "utf8", (err, data) => {
             if (err) throw err;
 
             connection.query(data, function (err, result) {
